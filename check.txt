@@ -1,0 +1,626 @@
+
+
+
+
+
+
+
+vboxuser@My-ubuntu-linux:~$ cd ~/kasirskaalina09-gif/workspace
+bash: cd: /home/vboxuser/kasirskaalina09-gif/workspace: No such file or directory
+vboxuser@My-ubuntu-linux:~$ cd ~/kasirskaaalina09-gif/workspace
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ git submodule add https://github.com/google/googletest third-party/gtest
+Cloning into '/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest'...
+remote: Enumerating objects: 28637, done.
+remote: Counting objects: 100% (74/74), done.
+remote: Compressing objects: 100% (53/53), done.
+remote: Total 28637 (delta 36), reused 22 (delta 20), pack-reused 28563 (from 2)
+Receiving objects: 100% (28637/28637), 13.79 MiB | 2.54 MiB/s, done.
+Resolving deltas: 100% (21272/21272), done.
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cd third-party/gtest
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest$ git checkout release-1.8.1
+Note: switching to 'release-1.8.1'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 2fe3bd99 Merge pull request #1433 from dsacre/fix-clang-warnings
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest$ cd ../..
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cd ../
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects$ cd /..
+vboxuser@My-ubuntu-linux:/$ cd ~/kasirskaaalina09-gif/workspace/projects/lab05
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ git add third-party/gtest
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ git commit -m "added gtest framework"
+[main b3bc43c] added gtest framework
+ 2 files changed, 4 insertions(+)
+ create mode 100644 .gitmodules
+ create mode 160000 third-party/gtest
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano CMakeLists.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cat CMakeLists.txt
+cmake_minimum_required(VERSION 3.4)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(BUILD_EXAMPLES "Build examples" OFF)
+option(BUILD_TESTS "Build tests" OFF)
+
+project(print)
+
+add_library(print STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/print.cpp)
+
+target_include_directories(print PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+if(BUILD_EXAMPLES)
+  file(GLOB EXAMPLE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/examples/*.cpp")
+  foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+    get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
+    add_executable(${EXAMPLE_NAME} ${EXAMPLE_SOURCE})
+    target_link_libraries(${EXAMPLE_NAME} print)
+    install(TARGETS ${EXAMPLE_NAME}
+      RUNTIME DESTINATION bin
+    )
+  endforeach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+endif()
+
+install(TARGETS print
+    EXPORT print-config
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
+install(EXPORT print-config DESTINATION cmake)
+
+add_subdirectory(formatter_lib)
+add_subdirectory(formatter_ex_lib)
+add_subdirectory(solver_lib)
+add_subdirectory(hello_world_application)
+add_subdirectory(solver_application)
+if(BUILD_TESTS)
+  enable_testing()
+
+  add_subdirectory(third-party/gtest)
+
+  file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
+
+  add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
+
+  target_link_libraries(check ${PROJECT_NAME} gtest_main)
+
+  add_test(NAME check COMMAND check)
+endif()
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ mkdir tests
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano tests/test1.cpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake -H. -B_build -DBUILD_TESTS=ON
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Deprecation Warning at formatter_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at formatter_ex_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at solver_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at hello_world_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at solver_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/googlemock/CMakeLists.txt:42 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/googletest/CMakeLists.txt:49 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Warning (dev) at third-party/gtest/googletest/cmake/internal_utils.cmake:239 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+Call Stack (most recent call first):
+  third-party/gtest/googletest/CMakeLists.txt:84 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found PythonInterp: /usr/bin/python3 (found version "3.12.3") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (0.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/_build
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake --build _build
+[  4%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
+[  9%] Linking CXX static library libprint.a
+[  9%] Built target print
+[ 13%] Building CXX object third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+In file included from /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-all.cc:42:
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc: In function ‘bool testing::internal::StackGrowsDown()’:
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1224:24: error: ‘dummy’ may be used uninitialized [-Werror=maybe-uninitialized]
+ 1224 |   StackLowerThanAddress(&dummy, &result);
+      |   ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1214:13: note: by argument 1 of type ‘const void*’ to ‘void testing::internal::StackLowerThanAddress(const void*, bool*)’ declared here
+ 1214 | static void StackLowerThanAddress(const void* ptr, bool* result) {
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1222:7: note: ‘dummy’ declared here
+ 1222 |   int dummy;
+      |       ^~~~~
+cc1plus: all warnings being treated as errors
+gmake[2]: *** [third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make:76: third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:468: third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano CMakeLists.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ rm -rf _build
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake -H. -B_build -DBUILD_TESTS=ON
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Deprecation Warning at formatter_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at formatter_ex_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at solver_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at hello_world_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at solver_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/googlemock/CMakeLists.txt:42 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/googletest/CMakeLists.txt:49 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Warning (dev) at third-party/gtest/googletest/cmake/internal_utils.cmake:239 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+Call Stack (most recent call first):
+  third-party/gtest/googletest/CMakeLists.txt:84 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found PythonInterp: /usr/bin/python3 (found version "3.12.3") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/_build
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake --build _build
+[  4%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
+[  9%] Linking CXX static library libprint.a
+[  9%] Built target print
+[ 13%] Building CXX object third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+In file included from /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-all.cc:42:
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc: In function ‘bool testing::internal::StackGrowsDown()’:
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1224:24: warning: ‘dummy’ may be used uninitialized [-Wmaybe-uninitialized]
+ 1224 |   StackLowerThanAddress(&dummy, &result);
+      |   ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1214:13: note: by argument 1 of type ‘const void*’ to ‘void testing::internal::StackLowerThanAddress(const void*, bool*)’ declared here
+ 1214 | static void StackLowerThanAddress(const void* ptr, bool* result) {
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1222:7: note: ‘dummy’ declared here
+ 1222 |   int dummy;
+      |       ^~~~~
+[ 18%] Linking CXX static library libgtest.a
+[ 18%] Built target gtest
+[ 22%] Building CXX object third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[ 27%] Linking CXX static library libgtest_main.a
+[ 27%] Built target gtest_main
+[ 31%] Building CXX object CMakeFiles/check.dir/tests/test1.cpp.o
+[ 36%] Linking CXX executable check
+[ 36%] Built target check
+[ 40%] Building CXX object formatter_lib/CMakeFiles/formatter.dir/formatter.cpp.o
+[ 45%] Linking CXX static library libformatter.a
+[ 45%] Built target formatter
+[ 50%] Building CXX object formatter_ex_lib/CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o
+[ 54%] Linking CXX static library libformatter_ex.a
+[ 54%] Built target formatter_ex
+[ 59%] Building CXX object solver_lib/CMakeFiles/solver.dir/solver.cpp.o
+[ 63%] Linking CXX static library libsolver.a
+[ 63%] Built target solver
+[ 68%] Building CXX object hello_world_application/CMakeFiles/hello_world.dir/hello_world.cpp.o
+[ 72%] Linking CXX executable hello_world
+[ 72%] Built target hello_world
+[ 77%] Building CXX object solver_application/CMakeFiles/solver_application.dir/equation.cpp.o
+[ 81%] Linking CXX executable solver_application
+[ 81%] Built target solver_application
+[ 86%] Building CXX object third-party/gtest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[ 90%] Linking CXX static library libgmock.a
+[ 90%] Built target gmock
+[ 95%] Building CXX object third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[100%] Linking CXX static library libgmock_main.a
+[100%] Built target gmock_main
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake --build _build --target test
+Running tests...
+Test project /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/_build
+    Start 1: check
+1/1 Test #1: check ............................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.01 sec
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ _build/check
+Running main() from /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest_main.cc
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from Print
+[ RUN      ] Print.InFileStream
+[       OK ] Print.InFileStream (0 ms)
+[----------] 1 test from Print (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (0 ms total)
+[  PASSED  ] 1 test.
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ sed -i 's/lab04/lab05/g' README.md
+sed: can't read README.md: No such file or directory
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$  sed -i 's/lab04/lab05/g' READMED.md
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ mkdir -p .github/workflows
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano .github/workflows/ci.yml
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ git add .
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ git commit -m "added gtest framework and tests"
+[main de40b72] added gtest framework and tests
+ 5 files changed, 59 insertions(+), 24 deletions(-)
+ create mode 100644 file.txt
+ create mode 100644 tests/test1.cpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ git push origin main 
+Username for 'https://github.com': kasirskaaalina09-gif
+Password for 'https://kasirskaaalina09-gif@github.com': 
+Enumerating objects: 101, done.
+Counting objects: 100% (101/101), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (59/59), done.
+Writing objects: 100% (101/101), 26.56 KiB | 8.85 MiB/s, done.
+Total 101 (delta 30), reused 85 (delta 26), pack-reused 0
+remote: Resolving deltas: 100% (30/30), done.
+To https://github.com/kasirskaaalina09-gif/lab05.git
+ * [new branch]      main -> main
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ mkdir banking
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ touch banking/Account.cpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ touch banking/Account.h
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ touch banking/Transaction.cpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ touch banking/Transaction.h
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ touch banking/CMakeLists.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano banking/CMakeLists.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano CMakeLists.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano banking/Account.h
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano banking/Account.cpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ check.txt
+check.txt: command not found
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ touch check.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano check.txt
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ 
+vboxuser@My-ubuntu-linux:~$ cd ~/kasirskaaalina09-gif/workspace
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace$ cd projects/lab05
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano banking/tests/mocks/MockTransaction.hpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ nano banking/tests/test_account.cpp
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ rm -rf _build
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake -H. -B_build -DBUILD_TESTS=ON
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Deprecation Warning at formatter_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at formatter_ex_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at solver_lib/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at hello_world_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at solver_application/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/googlemock/CMakeLists.txt:42 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Deprecation Warning at third-party/gtest/googletest/CMakeLists.txt:49 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+CMake Warning (dev) at third-party/gtest/googletest/cmake/internal_utils.cmake:239 (find_package):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning.
+
+Call Stack (most recent call first):
+  third-party/gtest/googletest/CMakeLists.txt:84 (include)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found PythonInterp: /usr/bin/python3 (found version "3.12.3") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Configuring done (0.9s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/_build
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake --build _build
+[  3%] Building CXX object CMakeFiles/print.dir/sources/print.cpp.o
+[  7%] Linking CXX static library libprint.a
+[  7%] Built target print
+[ 11%] Building CXX object third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+In file included from /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-all.cc:42:
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc: In function ‘bool testing::internal::StackGrowsDown()’:
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1224:24: warning: ‘dummy’ may be used uninitialized [-Wmaybe-uninitialized]
+ 1224 |   StackLowerThanAddress(&dummy, &result);
+      |   ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1214:13: note: by argument 1 of type ‘const void*’ to ‘void testing::internal::StackLowerThanAddress(const void*, bool*)’ declared here
+ 1214 | static void StackLowerThanAddress(const void* ptr, bool* result) {
+      |             ^~~~~~~~~~~~~~~~~~~~~
+/home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/third-party/gtest/googletest/src/gtest-death-test.cc:1222:7: note: ‘dummy’ declared here
+ 1222 |   int dummy;
+      |       ^~~~~
+[ 14%] Linking CXX static library libgtest.a
+[ 14%] Built target gtest
+[ 18%] Building CXX object third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+[ 22%] Linking CXX static library libgtest_main.a
+[ 22%] Built target gtest_main
+[ 25%] Building CXX object CMakeFiles/check.dir/tests/test1.cpp.o
+[ 29%] Linking CXX executable check
+[ 29%] Built target check
+[ 33%] Building CXX object banking/CMakeFiles/banking.dir/Account.cpp.o
+[ 37%] Building CXX object banking/CMakeFiles/banking.dir/Transaction.cpp.o
+[ 40%] Linking CXX static library libbanking.a
+[ 40%] Built target banking
+[ 44%] Building CXX object third-party/gtest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+[ 48%] Linking CXX static library libgmock.a
+[ 48%] Built target gmock
+[ 51%] Building CXX object CMakeFiles/banking_tests.dir/banking/tests/test_account.cpp.o
+[ 55%] Linking CXX executable banking_tests
+[ 55%] Built target banking_tests
+[ 59%] Building CXX object formatter_lib/CMakeFiles/formatter.dir/formatter.cpp.o
+[ 62%] Linking CXX static library libformatter.a
+[ 62%] Built target formatter
+[ 66%] Building CXX object formatter_ex_lib/CMakeFiles/formatter_ex.dir/formatter_ex.cpp.o
+[ 70%] Linking CXX static library libformatter_ex.a
+[ 70%] Built target formatter_ex
+[ 74%] Building CXX object solver_lib/CMakeFiles/solver.dir/solver.cpp.o
+[ 77%] Linking CXX static library libsolver.a
+[ 77%] Built target solver
+[ 81%] Building CXX object hello_world_application/CMakeFiles/hello_world.dir/hello_world.cpp.o
+[ 85%] Linking CXX executable hello_world
+[ 85%] Built target hello_world
+[ 88%] Building CXX object solver_application/CMakeFiles/solver_application.dir/equation.cpp.o
+[ 92%] Linking CXX executable solver_application
+[ 92%] Built target solver_application
+[ 96%] Building CXX object third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+[100%] Linking CXX static library libgmock_main.a
+[100%] Built target gmock_main
+vboxuser@My-ubuntu-linux:~/kasirskaaalina09-gif/workspace/projects/lab05$ cmake --build _build --target test
+Running tests...
+Test project /home/vboxuser/kasirskaaalina09-gif/workspace/projects/lab05/_build
+    Start 1: check
+1/2 Test #1: check ............................   Passed    0.01 sec
+    Start 2: banking_tests
+2/2 Test #2: banking_tests ....................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   0.01 sec

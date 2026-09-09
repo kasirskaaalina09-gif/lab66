@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake lcov gcovr libgtest-dev libgmock-dev
+
+      - name: Configure CMake with coverage
+        run: cmake -B _build -DBUILD_TESTS=ON -DCMAKE_CXX_FLAGS="--coverage -O0 -g -w"
+
+      - name: Build
+        run: cmake --build _build
+
+      - name: Run tests
+        working-directory: _build
+        run: ctest --verbose
+
+      - name: Collect coverage
+        working-directory: _build
+        run: |
+          gcovr -r .. \
+            --filter '.*banking/.*' \
+            --exclude '.*tests.*' \
+            --exclude '.*mocks.*' \
+            --xml coverage.xml
+
