@@ -53,3 +53,22 @@ jobs:
         run: |
           cd _build
           cpack -G WIX
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run: cmake -B _build
+
+      - name: Build
+        run: cmake --build _build --config Release
+
+      - name: Build DragNDrop package
+        run: |
+          cd _build
+          cpack -G DragNDrop
