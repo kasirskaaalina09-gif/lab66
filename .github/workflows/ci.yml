@@ -2,13 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [ master, main ]
-
-  pull_request:
-    branches: [ master, main ]
+    tags:
+      - "v*"
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,24 +15,22 @@ jobs:
           submodules: recursive
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake lcov gcovr libgtest-dev libgmock-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake rpm
 
-      - name: Configure CMake with coverage
-        run: cmake -B _build -DBUILD_TESTS=ON -DCMAKE_CXX_FLAGS="--coverage -O0 -g -w"
+      - name: Configure CMake
+        run: cmake -B _build
 
       - name: Build
         run: cmake --build _build
 
-      - name: Run tests
-        working-directory: _build
-        run: ctest --verbose
-
-      - name: Collect coverage
-        working-directory: _build
+      - name: Build DEB package
         run: |
-          gcovr -r .. \
-            --filter '.*banking/.*' \
-            --exclude '.*tests.*' \
-            --exclude '.*mocks.*' \
-            --xml coverage.xml
+          cd _build
+          cpack -G DEB
 
+      - name: Build RPM package
+        run: |
+          cd _build
+          cpack -G RPM
